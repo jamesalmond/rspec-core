@@ -890,6 +890,25 @@ module RSpec::Core
       end
     end
 
+    describe "#with_context" do
+      before do
+        shared_context "named this" do
+          def foo; 'foo'; end
+        end
+      end
+
+      it "includes the named context" do
+        group = ExampleGroup.describe do
+          with_context "named this" do
+            it "accesses foo" do
+              foo.should eq('foo')
+            end
+          end
+        end
+        group.run.should be_true
+      end
+    end
+
     describe "#include_examples" do
       before do
         shared_examples "named this" do

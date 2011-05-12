@@ -18,7 +18,7 @@ Feature: shared context
         end
       end
       """
-  
+
   Scenario: declare shared context and include it with include_context
     Given a file named "shared_context_example.rb" with:
       """
@@ -72,3 +72,32 @@ Feature: shared context
       """
     When I run `rspec shared_context_example.rb`
     Then the examples should all pass
+
+  Scenario: declare shared context and use it with with_context
+    Given a file named "shared_context_example.rb" with:
+      """
+      require "./shared_stuff.rb"
+
+      describe "group that includes a shared context using 'include_context'" do
+        with_context "shared stuff" do
+          it "has access to methods defined in shared context" do
+            shared_method.should eq("it works")
+          end
+
+          it "has access to methods defined with let in shared context" do
+            shared_let['arbitrary'].should eq('object')
+          end
+
+          it "runs the before hooks defined in the shared context" do
+            @some_var.should be(:some_value)
+          end
+
+          it "accesses the subject defined in the shared context" do
+            subject.should eq('this is the subject')
+          end
+        end
+      end
+      """
+    When I run `rspec shared_context_example.rb`
+    Then the examples should all pass
+
